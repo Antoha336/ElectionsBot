@@ -3,8 +3,8 @@ import telebot
 from dotenv import load_dotenv
 
 from db import Poll, Option, Vote, session
-from texts import start_message_text, main_menu_text, create_poll_text
-from markups import main_menu, create_poll_menu
+from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text
+from markups import main_menu, create_poll_menu, my_polls_menu
 
 load_dotenv()
 
@@ -30,13 +30,12 @@ def send_welcome(message):
                      reply_markup=main_menu)
 
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith('po'))
 @bot.callback_query_handler(func=lambda call: call.data.startswith('poll'))
 def handle(call):
     data = call.data.split()
     operation = data[1]
     if operation == 'create_poll':
-        poll = Poll(user_telegram_id=call.from_user.id)
+        poll = Poll(user_id=call.from_user.id)
         session.add(poll)
         session.commit()
 
@@ -44,14 +43,16 @@ def handle(call):
             text=create_poll_text(poll),
             chat_id=call.message.chat.id,
             message_id=call.message.id,
+            parse_mode='html',
             reply_markup=create_poll_menu(poll.id)
         )
     elif operation == 'my_polls':
         bot.edit_message_text(
-            text=create_poll_text(poll),
+            text=my_polls_text,
             chat_id=call.message.chat.id,
             message_id=call.message.id,
-            reply_markup=create_poll_menu(poll.id)
+            parse_mode='html',
+            reply_markup=my_polls_menu(call.from_user.id)
         )
 
 

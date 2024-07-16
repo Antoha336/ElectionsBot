@@ -1,4 +1,8 @@
 from telebot.types import InlineKeyboardMarkup as InlineMarkup, InlineKeyboardButton as InlineButton
+from db import session, Poll
+
+back = InlineButton(text='Назад',
+                    callback_data='main_menu')
 
 main_menu = InlineMarkup()
 item_1 = InlineButton(text='Создать голосование',
@@ -23,6 +27,13 @@ def create_poll_menu(poll_id):
                           callback_data=f'poll cancel {poll_id}')
     return InlineMarkup().row(item_1).row(item_2).row(item_3).row(item_4).row(item_5).row(item_6)
 
+
 def my_polls_menu(user_id):
-    polls = session.query(Poll).filter(user_id=user_id)
-    return
+    polls = session.query(Poll).filter(Poll.user_id == user_id)
+    menu = InlineMarkup()
+    for poll in polls:
+        item = InlineButton(text=poll.name,
+                            callback_data=f'poll {poll.id} get')
+        menu.row(item)
+    menu.row(back)
+    return menu

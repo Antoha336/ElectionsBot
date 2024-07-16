@@ -14,5 +14,4 @@ def create_poll_text(poll):
     )
 
 
-def my_polls_text(user_id):
-    return '<b>Ваши голосования</b>'
+my_polls_text = '<b>Ваши голосования</b>'
