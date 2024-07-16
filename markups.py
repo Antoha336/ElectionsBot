@@ -33,7 +33,7 @@ def my_polls_menu(user_id):
     menu = InlineMarkup()
     for poll in polls:
         item = InlineButton(text=poll.name,
-                            callback_data=f'poll {poll.id} get')
+                            callback_data=f'poll get {poll.id}')
         menu.row(item)
     menu.row(back)
     return menu
