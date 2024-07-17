@@ -15,11 +15,11 @@ main_menu.row(item_1).row(item_2)
 def create_poll_menu(poll_id):
     item_1 = InlineButton(text='Изменить название',
                           callback_data=f'poll change_name {poll_id}')
-    item_2 = InlineButton(text='Изменить настройку анонимности',
+    item_2 = InlineButton(text='Изменить тип голосования',
                           callback_data=f'poll change_anonymous {poll_id}')
-    item_3 = InlineButton(text='Изменить настройку публичности',
+    item_3 = InlineButton(text='Изменить видимость результатов',
                           callback_data=f'poll change_public {poll_id}')
-    item_4 = InlineButton(text='Изменить возможность переголосования',
+    item_4 = InlineButton(text='Изменить возможность отмены голоса',
                           callback_data=f'poll change_retract_vote {poll_id}')
     item_5 = InlineButton(text='Подтвердить создание',
                           callback_data=f'poll create {poll_id}')

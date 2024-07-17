@@ -3,7 +3,7 @@ import telebot
 from dotenv import load_dotenv
 
 from db import Poll, Option, Vote, session
-from polls_functions import change_name
+from polls_functions import change_name, change_anonymous, change_public, change_retract_vote
 from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text
 from markups import main_menu, create_poll_menu, my_polls_menu, back_menu
 
@@ -51,7 +51,7 @@ def handle(call):
         session.commit()
 
         bot.edit_message_text(
-            text=create_poll_text(poll),
+            text=create_poll_text(poll.id),
             chat_id=call.message.chat.id,
             message_id=call.message.id,
             parse_mode='html',
@@ -76,6 +76,33 @@ def handle(call):
                 reply_markup=back_menu
             )
             bot.register_next_step_handler(call.message, change_name, bot, call.message, poll_id)
+        elif operation == 'change_anonymous':
+            change_anonymous(poll_id)
+            bot.edit_message_text(
+                text=create_poll_text(poll_id),
+                chat_id=call.message.chat.id,
+                message_id=call.message.id,
+                parse_mode='html',
+                reply_markup=create_poll_menu(poll_id)
+            )
+        elif operation == 'change_public':
+            change_public(poll_id)
+            bot.edit_message_text(
+                text=create_poll_text(poll_id),
+                chat_id=call.message.chat.id,
+                message_id=call.message.id,
+                parse_mode='html',
+                reply_markup=create_poll_menu(poll_id)
+            )
+        elif operation == 'change_retract_vote':
+            change_retract_vote(poll_id)
+            bot.edit_message_text(
+                text=create_poll_text(poll_id),
+                chat_id=call.message.chat.id,
+                message_id=call.message.id,
+                parse_mode='html',
+                reply_markup=create_poll_menu(poll_id)
+            )
 
 
 bot.infinity_polling()

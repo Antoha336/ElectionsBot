@@ -6,13 +6,14 @@ start_message_text = "Привет! Я бот для создания всево
 main_menu_text = "<b>Главное меню</b>"
 
 
-def create_poll_text(poll):
+def create_poll_text(poll_id):
+    poll = session.query(Poll).get(poll_id)
     return (
         f'<b>Создание голосования</b>\n\n'
         f'Название: {poll.name}\n'
-        f'Голосование: {"Анонимное" if poll.is_anonymous else "Не анонимное"}\n'
-        f'Результаты: {"Видно всегда" if poll.is_public else "После окончания"}\n'
-        f'Отдать голос: {"Можно переголосовать" if poll.can_retract_vote else "Только один раз"}'
+        f'Тип голосования: {"Скрытое (Анонимное)" if poll.is_anonymous else "Открытое (Не анонимное)"}\n'
+        f'Видимость результатов: {"Видно всегда" if poll.is_public else "После окончания голосования"}\n'
+        f'Отмена голоса: {"Доступна" if poll.can_retract_vote else "Не доступна"}'
     )
 
 
