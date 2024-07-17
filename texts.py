@@ -15,7 +15,7 @@ def create_poll_text(poll_id):
         f'<b>Создание голосования</b>\n\n'
         f'Название: {poll.name}\n\n'
         f'Тип голосования: {"Скрытое (Анонимное)" if poll.is_anonymous else "Открытое (Не анонимное)"}\n'
-        f'Видимость результатов: {"Видно всегда" if poll.is_public else "После окончания голосования"}\n'
+        f'Видимость результатов: {"Всегда" if poll.is_public else "После окончания"}\n'
         f'Отмена голоса: {"Доступна" if poll.can_retract_vote else "Не доступна"}\n\n'
         f'Опции: '
     )
@@ -64,7 +64,7 @@ def poll_info_text(poll_id, user_id):
         f'Название: {poll.name}\n'
         f'Статус голосования: {"Проходит" if poll.status == "Opened" else "Закончено"}\n'
         f'Тип голосования: {"Скрытое (Анонимное)" if poll.is_anonymous else "Открытое (Не анонимное)"}\n'
-        f'Видимость результатов: {"Видно всегда" if poll.is_public else "После окончания голосования"}\n'
+        f'Видимость результатов: {"Всегда" if poll.is_public else "После окончания"}\n'
         f'Отмена голоса: {"Доступна" if poll.can_retract_vote else "Не доступна"}\n\n'
         f'Опции:\n'
     )
