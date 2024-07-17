@@ -8,7 +8,7 @@ from polls_functions import change_name, change_anonymous, change_public, change
 from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text, poll_info_text, \
     change_options_text, voting_text
 from markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, voting_menu
-
+from vote_functions import vote
 
 load_dotenv()
 
@@ -152,9 +152,8 @@ def handle(call):
     operation, poll_id = data[0], data[1]
 
     poll = session.get(Poll, poll_id)
-    has_vote = session.query(Vote).join(Poll).filter(
-        Poll.id == poll_id and Vote.user_id == call.from_user.id).count()
-    if has_vote:
+    user_vote = session.query(Vote).join(Poll).filter(Poll.id == poll_id and Vote.user_id == call.from_user.id).first()
+    if user_vote and not poll.can_retract_vote:
         bot.answer_callback_query(
             callback_query_id=call.id,
             text='Вы уже проголосовали!'
@@ -169,20 +168,14 @@ def handle(call):
             )
         else:
             bot.edit_message_text(
-                text=voting_text(poll.can_retract_vote),
+                text=voting_text(poll.can_retract_vote, user_vote),
                 chat_id=call.message.chat.id,
                 message_id=call.message.id,
                 parse_mode='html',
                 reply_markup=voting_menu(poll_id)
             )
     else:
-        option_id = data[2]
-        session.add(Vote(
-            user_id=call.from_user.id,
-            option_id=option_id,
-            poll_id=poll_id,
-        ))
-        session.commit()
+        vote(call.from_user.id, data[2], poll_id, user_vote)
         bot.answer_callback_query(
             callback_query_id=call.id,
             text='Спасибо! Ваш голос учтён!'

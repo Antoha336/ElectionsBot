@@ -88,8 +88,14 @@ change_options_text = (
 )
 
 
-def voting_text(can_retract_messages):
-    return (
-        '<b>Голосование</b>\n\n'
-        'Обратите внимание - проголосовать можно только один раз' if not can_retract_messages else 'Доступна отмена голоса'
-    )
+def voting_text(can_retract_messages, vote):
+    text = '<b>Голосование</b>\n\n'
+    if vote:
+        text += f'Вы уже проголосовали за опцию "{vote.option.name}", но вы можете переголосовать, выбрав другую опцию'
+    elif not can_retract_messages:
+        text += 'В голосовании <b>не доступно</b> переголосование, то есть проголосовать можно только один раз'
+    else:
+        text += ('В голосовании <b>доступно</b> переголосование. Впоследствии вы сможете изменить свой '
+                 'выбор, если голосование не будет закончено')
+
+    return text
