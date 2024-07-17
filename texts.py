@@ -45,6 +45,8 @@ def poll_info_text(poll_id, user_id):
         (func.count(Vote.id)).label('vote_count')
     ).join(
         Vote, Vote.option_id == Option.id, isouter=True
+    ).filter(
+        Option.poll_id == poll_id
     ).group_by(
         Option.id
     ).order_by(
