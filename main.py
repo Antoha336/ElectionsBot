@@ -118,7 +118,18 @@ def handle(call):
                     reply_markup=create_poll_menu(poll_id)
                 )
         elif operation == 'change_status':
-            if change_status(poll_id):
+            answer = change_status(poll_id)
+            if answer is None:
+                bot.answer_callback_query(
+                    callback_query_id=call.id,
+                    text='Невозможно создать голосование с менее чем 2-мя опциями'
+                )
+            elif not answer:
+                bot.answer_callback_query(
+                    callback_query_id=call.id,
+                    text='Голосование уже окончено'
+                )
+            else:
                 bot.edit_message_text(
                     text=poll_info_text(poll_id, call.from_user.id),
                     chat_id=call.message.chat.id,
@@ -164,7 +175,7 @@ def handle(call):
         if poll.status == 'Closed':
             bot.answer_callback_query(
                 callback_query_id=call.id,
-                text='Голосование уже закрыто!'
+                text='Голосование уже окончено'
             )
         else:
             bot.edit_message_text(

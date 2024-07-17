@@ -51,11 +51,14 @@ def change_retract_vote(poll_id):
 
 
 def change_status(poll_id):
-    poll = session.query(Poll).get(poll_id)
+    poll = session.get(Poll, poll_id)
+    options = session.query(Option).join(Poll).filter(Poll.id == poll_id).count()
     if poll.status == 'Closed':
         return False
+    elif poll.status == 'Created' and options < 2:
+        return None
 
-    poll.status = "Closed" if poll.status == "Opened" else "Opened" if poll.status == "Created" else "Closed"
+    poll.status = 'Closed' if poll.status == 'Opened' else 'Opened'
     session.commit()
     return True
 
@@ -81,7 +84,7 @@ def change_options(message, bot, call_message, poll_id):
     session.commit()
 
     bot.edit_message_text(
-        text="Успешно!",
+        text='Успешно!',
         chat_id=call_message.chat.id,
         message_id=call_message.id,
         parse_mode='html'
