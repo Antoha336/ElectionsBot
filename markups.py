@@ -13,18 +13,25 @@ main_menu.row(item_1).row(item_2)
 
 
 def create_poll_menu(poll_id):
-    item_1 = InlineButton(text='Изменить название',
-                          callback_data=f'poll change_name {poll_id}')
-    item_2 = InlineButton(text='Изменить тип голосования',
-                          callback_data=f'poll change_anonymous {poll_id}')
-    item_3 = InlineButton(text='Изменить видимость результатов',
-                          callback_data=f'poll change_public {poll_id}')
-    item_4 = InlineButton(text='Изменить возможность отмены голоса',
-                          callback_data=f'poll change_retract_vote {poll_id}')
-    item_5 = InlineButton(text='Подтвердить создание',
-                          callback_data=f'poll change_status {poll_id}')
-    item_6 = InlineButton(text='Отменить создание',
-                          callback_data=f'poll cancel {poll_id}')
+    item_1 = InlineButton(
+        text='Изменить название',
+        callback_data=f'poll change_name {poll_id}')
+    item_2 = InlineButton(
+        text='Изменить тип голосования',
+        callback_data=f'poll change_anonymous {poll_id}')
+    item_3 = InlineButton(
+        text='Изменить видимость результатов',
+        callback_data=f'poll change_public {poll_id}')
+    item_4 = InlineButton(
+        text='Изменить возможность отмены голоса',
+        callback_data=f'poll change_retract_vote {poll_id}')
+    item_5 = InlineButton(
+        text='Следующий шаг (добавление вариантов голосования)',
+        callback_data=f'poll change_status {poll_id}')
+    item_6 = InlineButton(
+        text='Отменить создание',
+        callback_data=f'poll cancel {poll_id}'
+    )
     return InlineMarkup().row(item_1).row(item_2).row(item_3).row(item_4).row(item_5).row(item_6)
 
 
