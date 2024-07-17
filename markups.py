@@ -80,20 +80,16 @@ def poll_info_menu(poll_id, user_id):
     has_vote = session.query(Vote).join(Poll).filter(Poll.id == poll_id and Vote.user_id == user_id).count()
 
     item_1 = InlineButton(
-        text='Проголосовать (Не доступно)' if has_vote else 'Проголосовать',
-        callback_data=f'vote {poll_id}'
+        text='Проголосовать',
+        callback_data=f'vote {poll_id}' + ' voted' if has_vote else ' closed' if poll.status == 'Closed' else ''
     )
-    item_2 = InlineButton(
-        text='Просмотреть результаты' if poll.is_public or poll.status == "Closed" else 'Результаты пока не доступны',
-        callback_data=f'poll results {poll_id}'
-    )
-    menu = InlineMarkup().row(item_1).row(item_2)
+    menu = InlineMarkup().row(item_1)
     if poll.user_id == user_id and poll.status == 'Opened':
-        item_3 = InlineButton(
+        item_2 = InlineButton(
             text='Закрыть голосование',
             callback_data=f'poll change_status {poll_id}'
         )
-        menu.row(item_3)
+        menu.row(item_2)
     menu.row(back)
 
     return menu

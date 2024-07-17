@@ -3,8 +3,10 @@ import telebot
 from dotenv import load_dotenv
 
 from db import Poll, Option, Vote, session
-from polls_functions import change_name, change_anonymous, change_public, change_retract_vote, change_status, delete
-from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text, poll_info_text
+from polls_functions import change_name, change_anonymous, change_public, change_retract_vote, change_status, delete, \
+    change_options
+from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text, poll_info_text, \
+    change_options_text
 from markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, adding_options_menu
 
 load_dotenv()
@@ -137,6 +139,15 @@ def handle(call):
                     parse_mode='html',
                     reply_markup=main_menu
                 )
+        elif operation == 'change_options':
+            bot.edit_message_text(
+                text=change_options_text,
+                chat_id=call.message.chat.id,
+                message_id=call.message.id,
+                parse_mode='html',
+                reply_markup=back_menu
+            )
+            bot.register_next_step_handler(call.message, change_options, bot, call.message, poll_id)
 
 
 

@@ -68,3 +68,22 @@ def delete(poll_id):
     session.delete(poll)
     session.commit()
     return True
+
+
+def change_options(message, bot, call_message, poll_id):
+    options = message.text.split('\n')
+    for option in options:
+        session.add(Option(name=option, poll_id=poll_id))
+    session.commit()
+    bot.edit_message_text(
+        text="Успешно!",
+        chat_id=call_message.chat.id,
+        message_id=call_message.id,
+        parse_mode='html'
+    )
+    bot.send_message(
+        text=create_poll_text(poll_id),
+        chat_id=message.chat.id,
+        parse_mode='html',
+        reply_markup=create_poll_menu(poll_id)
+    )
