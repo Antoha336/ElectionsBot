@@ -37,7 +37,8 @@ def change_retract_vote(poll_id):
 
 def change_status(poll_id):
     poll = session.query(Poll).get(poll_id)
-    poll.status = "Closed" if poll.status == "Opened" else "Opened"
+    poll.status = "Closed" if poll.status == "Opened" else "Opened" if poll.status == "Created" else "Closed"
+    session.commit()
 
 
 def delete(poll_id):
