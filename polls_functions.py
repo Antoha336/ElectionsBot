@@ -41,5 +41,6 @@ def change_status(poll_id):
 
 
 def delete(poll_id):
-    session.query(Poll).get(poll_id).delete()
+    poll = session.query(Poll).get(poll_id)
+    session.delete(poll)
     session.commit()
