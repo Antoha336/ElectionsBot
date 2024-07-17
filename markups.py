@@ -27,12 +27,26 @@ def create_poll_menu(poll_id):
         callback_data=f'poll change_retract_vote {poll_id}')
     item_5 = InlineButton(
         text='Следующий шаг (добавление вариантов голосования)',
-        callback_data=f'poll change_status {poll_id}')
+        callback_data=f'poll next_step {poll_id}')
     item_6 = InlineButton(
         text='Отменить создание',
         callback_data=f'poll cancel {poll_id}'
     )
     return InlineMarkup().row(item_1).row(item_2).row(item_3).row(item_4).row(item_5).row(item_6)
+
+
+def adding_options_menu(poll_id):
+    item_1 = InlineButton(
+        text='Изменить опции',
+        callback_data=f'poll change_options {poll_id}'
+    )
+    item_2 = InlineButton(
+        text='Подтвердить создание',
+        callback_data=f'poll change_status {poll_id}')
+    item_3 = InlineButton(
+        text='Отменить создание',
+        callback_data=f'poll cancel {poll_id}')
+    return InlineMarkup().row(item_1).row(item_2).row(item_3)
 
 
 def my_polls_menu(user_id):
