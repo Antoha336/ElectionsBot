@@ -3,8 +3,9 @@ import telebot
 from dotenv import load_dotenv
 
 from db import Poll, Option, Vote, session
-from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text
-from markups import main_menu, create_poll_menu, my_polls_menu
+from polls_functions import change_name
+from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text
+from markups import main_menu, create_poll_menu, my_polls_menu, back_menu
 
 load_dotenv()
 
@@ -32,6 +33,7 @@ def send_welcome(message):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('main_menu'))
 def handle(call):
+    bot.clear_step_handler(call.message)
     bot.edit_message_text(text=main_menu_text,
                           chat_id=call.message.chat.id,
                           message_id=call.message.id,
@@ -63,6 +65,17 @@ def handle(call):
             parse_mode='html',
             reply_markup=my_polls_menu(call.from_user.id)
         )
+    else:
+        poll_id = data[2]
+        if operation == 'change_name':
+            bot.edit_message_text(
+                text=change_name_text(poll_id),
+                chat_id=call.message.chat.id,
+                message_id=call.message.id,
+                parse_mode='html',
+                reply_markup=back_menu
+            )
+            bot.register_next_step_handler(call.message, change_name, bot, call.message, poll_id)
 
 
 bot.infinity_polling()

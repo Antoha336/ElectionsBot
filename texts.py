@@ -1,3 +1,5 @@
+from db import session, Poll
+
 start_message_text = "Привет! Я бот для создания всевозможных голосований.\n" \
                      "Для вызова главного меню, воспользуйтесь командой /menu"
 
@@ -15,3 +17,11 @@ def create_poll_text(poll):
 
 
 my_polls_text = '<b>Ваши голосования</b>'
+
+
+def change_name_text(poll_id):
+    poll = session.query(Poll).get(poll_id)
+    return (
+        f'Введите новое название голосования\n'
+        f'Прежнее название: <code>{poll.name}</code>'
+    )

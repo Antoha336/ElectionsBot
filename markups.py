@@ -37,3 +37,6 @@ def my_polls_menu(user_id):
         menu.row(item)
     menu.row(back)
     return menu
+
+
+back_menu = InlineMarkup().row(back)
