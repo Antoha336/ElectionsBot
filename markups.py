@@ -1,5 +1,5 @@
 from telebot.types import InlineKeyboardMarkup as InlineMarkup, InlineKeyboardButton as InlineButton
-from db import session, Poll, Vote
+from db import session, Poll, Vote, Option
 
 back = InlineButton(text='Назад',
                     callback_data='main_menu')
@@ -76,20 +76,33 @@ def poll_info_menu(poll_id, user_id):
             return create_poll_menu(poll_id)
         else:
             return back_menu
+    elif poll.status == 'Closed':
+        item_1 = InlineButton(
+            text='Проголосовать',
+            callback_data=f'vote {poll_id}'
+        )
+        menu = InlineMarkup().row(item_1)
 
-    has_vote = session.query(Vote).join(Poll).filter(Poll.id == poll_id and Vote.user_id == user_id).count()
-
-    item_1 = InlineButton(
-        text='Проголосовать',
-        callback_data=f'vote {poll_id}' + ' voted' if has_vote else ' closed' if poll.status == 'Closed' else ''
-    )
-    menu = InlineMarkup().row(item_1)
     if poll.user_id == user_id and poll.status == 'Opened':
         item_2 = InlineButton(
-            text='Закрыть голосование',
+            text='Закончить голосование',
             callback_data=f'poll change_status {poll_id}'
         )
         menu.row(item_2)
+    menu.row(back)
+
+    return menu
+
+
+def voting_menu(poll_id):
+    options = session.query(Option).join(Poll).filter(Poll.id == poll_id)
+
+    menu = InlineMarkup()
+    for option in options:
+        menu.row(InlineButton(
+            text=option.name,
+            callback_data=f'vote_confirm {poll_id} {option.id}'
+        ))
     menu.row(back)
 
     return menu

@@ -6,8 +6,9 @@ from db import Poll, Option, Vote, session
 from polls_functions import change_name, change_anonymous, change_public, change_retract_vote, change_status, delete, \
     change_options
 from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text, poll_info_text, \
-    change_options_text
-from markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, adding_options_menu
+    change_options_text, voting_text
+from markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, adding_options_menu, \
+    voting_menu
 
 load_dotenv()
 
@@ -149,6 +150,55 @@ def handle(call):
             )
             bot.register_next_step_handler(call.message, change_options, bot, call.message, poll_id)
 
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('vote'))
+def handle(call):
+    data = call.data.split()
+    operation, poll_id = data[0], data[1]
+
+    poll = session.get(Poll, poll_id)
+    has_vote = session.query(Vote).join(Poll).filter(
+        Poll.id == poll_id and Vote.user_id == call.from_user.id).count()
+    if has_vote:
+        bot.answer_callback_query(
+            callback_query_id=call.id,
+            text='Вы уже проголосовали!'
+        )
+        return
+
+    if operation == 'vote':
+        if poll.status == 'Closed':
+            bot.answer_callback_query(
+                callback_query_id=call.id,
+                text='Голосование уже закрыто!'
+            )
+        else:
+            bot.edit_message_text(
+                text=voting_text(poll.can_retract_vote),
+                chat_id=call.message.chat.id,
+                message_id=call.message.id,
+                parse_mode='html',
+                reply_markup=voting_menu(poll_id)
+            )
+    else:
+        option_id = data[2]
+        session.add(Vote(
+            user_id=call.from_user.id,
+            option_id=option_id,
+            poll_id=poll_id,
+        ))
+        session.commit()
+        bot.answer_callback_query(
+            callback_query_id=call.id,
+            text='Спасибо! Ваш голос учтён!'
+        )
+        bot.edit_message_text(
+            text=poll_info_text(poll_id, call.from_user.id),
+            chat_id=call.message.chat.id,
+            message_id=call.message.id,
+            parse_mode='html',
+            reply_markup=poll_info_menu(poll_id, call.from_user.id)
+        )
 
 
 bot.infinity_polling()

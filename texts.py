@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from db import session, Poll, Vote, Option
 
 start_message_text = "Привет! Я бот для создания всевозможных голосований.\n" \
@@ -38,24 +39,44 @@ def change_name_text(poll_id):
 
 
 def poll_info_text(poll_id, user_id):
-    poll = session.query(Poll).get(poll_id)
+    poll = session.get(Poll, poll_id)
+    votes = session.query(
+        Option.name,
+        (func.count(Vote.id)).label('vote_count')
+    ).join(
+        Vote, Vote.option_id == Option.id, isouter=True
+    ).group_by(
+        Option.id
+    ).order_by(
+        Option.name
+    )
+
     if poll.status == "Created":
         if poll.user_id == user_id:
             return create_poll_text(poll_id)
         else:
             return "Нет доступа к голосованию, т.к. голосование ещё не было открыто"
 
-    votes = session.query(Vote).join(Poll).filter(Poll.id == poll_id).count()
-
-    return (
+    text = (
         f'<b>Информация о голосовании</b>\n\n'
         f'Название: {poll.name}\n'
-        f'Статус голосования: {"Открыто" if poll.status == "Opened" else "Закрыто"}\n'
+        f'Статус голосования: {"Проходит" if poll.status == "Opened" else "Закончено"}\n'
         f'Тип голосования: {"Скрытое (Анонимное)" if poll.is_anonymous else "Открытое (Не анонимное)"}\n'
         f'Видимость результатов: {"Видно всегда" if poll.is_public else "После окончания голосования"}\n'
         f'Отмена голоса: {"Доступна" if poll.can_retract_vote else "Не доступна"}\n\n'
-        f'Количество проголосовавших: {votes}'
+        f'Опции:\n'
     )
+
+    if poll.is_public or poll.status == 'Closed':
+        for option_name, vote_count in votes:
+            text += f'{option_name}' + f' ({vote_count})\n'
+    else:
+        for option_name, vote_count in votes:
+            text += f'{option_name}' + f' (?)\n'
+
+    text += f'\nКоличество проголосовавших: {sum([option.vote_count for option in votes])}'
+
+    return text
 
 
 change_options_text = (
@@ -63,3 +84,10 @@ change_options_text = (
     'Опция №1\n'
     'Опция №2\n'
 )
+
+
+def voting_text(can_retract_messages):
+    return (
+        '<b>Голосование</b>\n\n'
+        'Обратите внимание - проголосовать можно только один раз' if not can_retract_messages else 'Доступна отмена голоса'
+    )

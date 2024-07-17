@@ -1,4 +1,4 @@
-from db import session, Poll
+from db import session, Poll, Option
 from texts import create_poll_text
 from markups import create_poll_menu
 
@@ -71,10 +71,15 @@ def delete(poll_id):
 
 
 def change_options(message, bot, call_message, poll_id):
-    options = message.text.split('\n')
+    options = session.query(Option).join(Poll).filter(Poll.id == poll_id)
     for option in options:
+        session.delete(option)
+
+    new_options = message.text.split('\n')
+    for option in new_options:
         session.add(Option(name=option, poll_id=poll_id))
     session.commit()
+
     bot.edit_message_text(
         text="Успешно!",
         chat_id=call_message.chat.id,
