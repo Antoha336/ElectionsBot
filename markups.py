@@ -26,8 +26,8 @@ def create_poll_menu(poll_id):
         text='Изменить возможность отмены голоса',
         callback_data=f'poll change_retract_vote {poll_id}')
     item_5 = InlineButton(
-        text='Следующий шаг (добавление вариантов голосования)',
-        callback_data=f'poll next_step {poll_id}')
+        text='Настройки опций',
+        callback_data=f'poll options_settings {poll_id}')
     item_6 = InlineButton(
         text='Отменить создание',
         callback_data=f'poll cancel {poll_id}'
@@ -41,12 +41,18 @@ def adding_options_menu(poll_id):
         callback_data=f'poll change_options {poll_id}'
     )
     item_2 = InlineButton(
-        text='Подтвердить создание',
-        callback_data=f'poll change_status {poll_id}')
+        text='Настройки голосования',
+        callback_data=f'poll get {poll_id}'
+    )
     item_3 = InlineButton(
         text='Отменить создание',
-        callback_data=f'poll cancel {poll_id}')
-    return InlineMarkup().row(item_1).row(item_2).row(item_3)
+        callback_data=f'poll cancel {poll_id}'
+    )
+    item_4 = InlineButton(
+        text='Подтвердить создание',
+        callback_data=f'poll change_status {poll_id}'
+    )
+    return InlineMarkup().row(item_1).row(item_2).row(item_3, item_4)
 
 
 def my_polls_menu(user_id):
@@ -65,8 +71,13 @@ back_menu = InlineMarkup().row(back)
 
 def poll_info_menu(poll_id, user_id):
     poll = session.query(Poll).get(poll_id)
+    if poll.status == 'Created':
+        if poll.user_id == user_id:
+            return create_poll_menu(poll_id)
+        else:
+            return back_menu
+
     has_vote = session.query(Vote).join(Poll).filter(Poll.id == poll_id and Vote.user_id == user_id).count()
-    print(has_vote)
 
     item_1 = InlineButton(
         text='Проголосовать (Не доступно)' if has_vote else 'Проголосовать',

@@ -5,6 +5,9 @@ from markups import create_poll_menu
 
 def change_name(message, bot, call_message, poll_id):
     poll = session.query(Poll).get(poll_id)
+    if poll.status == 'Opened':
+        return False
+
     poll.name = message.text
     session.commit()
     bot.edit_message_text(text="Успешно!",
@@ -19,29 +22,49 @@ def change_name(message, bot, call_message, poll_id):
 
 def change_anonymous(poll_id):
     poll = session.query(Poll).get(poll_id)
+    if poll.status == 'Opened':
+        return False
+
     poll.is_anonymous = not poll.is_anonymous
     session.commit()
+    return True
 
 
 def change_public(poll_id):
     poll = session.query(Poll).get(poll_id)
+    if poll.status == 'Opened':
+        return False
+
     poll.is_public = not poll.is_public
     session.commit()
+    return True
 
 
 def change_retract_vote(poll_id):
     poll = session.query(Poll).get(poll_id)
+    if poll.status == 'Opened':
+        return False
+
     poll.can_retract_vote = not poll.can_retract_vote
     session.commit()
+    return True
 
 
 def change_status(poll_id):
     poll = session.query(Poll).get(poll_id)
+    if poll.status == 'Closed':
+        return False
+
     poll.status = "Closed" if poll.status == "Opened" else "Opened" if poll.status == "Created" else "Closed"
     session.commit()
+    return True
 
 
 def delete(poll_id):
     poll = session.query(Poll).get(poll_id)
+    if poll.status == 'Opened':
+        return False
+
     session.delete(poll)
     session.commit()
+    return True

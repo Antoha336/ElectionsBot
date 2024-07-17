@@ -69,7 +69,7 @@ def handle(call):
         poll_id = data[2]
         if operation == 'get':
             bot.edit_message_text(
-                text=poll_info_text(poll_id),
+                text=poll_info_text(poll_id, call.from_user.id),
                 chat_id=call.message.chat.id,
                 message_id=call.message.id,
                 parse_mode='html',
@@ -85,56 +85,58 @@ def handle(call):
             )
             bot.register_next_step_handler(call.message, change_name, bot, call.message, poll_id)
         elif operation == 'change_anonymous':
-            change_anonymous(poll_id)
-            bot.edit_message_text(
-                text=create_poll_text(poll_id),
-                chat_id=call.message.chat.id,
-                message_id=call.message.id,
-                parse_mode='html',
-                reply_markup=create_poll_menu(poll_id)
-            )
+            if change_anonymous(poll_id):
+                bot.edit_message_text(
+                    text=create_poll_text(poll_id),
+                    chat_id=call.message.chat.id,
+                    message_id=call.message.id,
+                    parse_mode='html',
+                    reply_markup=create_poll_menu(poll_id)
+                )
         elif operation == 'change_public':
-            change_public(poll_id)
-            bot.edit_message_text(
-                text=create_poll_text(poll_id),
-                chat_id=call.message.chat.id,
-                message_id=call.message.id,
-                parse_mode='html',
-                reply_markup=create_poll_menu(poll_id)
-            )
+            if change_public(poll_id):
+                bot.edit_message_text(
+                    text=create_poll_text(poll_id),
+                    chat_id=call.message.chat.id,
+                    message_id=call.message.id,
+                    parse_mode='html',
+                    reply_markup=create_poll_menu(poll_id)
+                )
         elif operation == 'change_retract_vote':
-            change_retract_vote(poll_id)
+            if change_retract_vote(poll_id):
+                bot.edit_message_text(
+                    text=create_poll_text(poll_id),
+                    chat_id=call.message.chat.id,
+                    message_id=call.message.id,
+                    parse_mode='html',
+                    reply_markup=create_poll_menu(poll_id)
+                )
+        elif operation == 'change_status':
+            if change_status(poll_id):
+                bot.edit_message_text(
+                    text=poll_info_text(poll_id, call.from_user.id),
+                    chat_id=call.message.chat.id,
+                    message_id=call.message.id,
+                    parse_mode='html',
+                    reply_markup=poll_info_menu(poll_id, call.from_user.id),
+                )
+        elif operation == 'options_settings':
             bot.edit_message_text(
                 text=create_poll_text(poll_id),
                 chat_id=call.message.chat.id,
                 message_id=call.message.id,
                 parse_mode='html',
-                reply_markup=create_poll_menu(poll_id)
-            )
-        elif operation == 'change_status':
-            change_status(poll_id)
-            bot.edit_message_text(
-                text=poll_info_text(poll_id),
-                chat_id=call.message.chat.id,
-                message_id=call.message.id,
-                parse_mode='html',
-                reply_markup=poll_info_menu(poll_id, call.from_user.id),
-            )
-        elif operation == 'next_step':
-            bot.edit_message_reply_markup(
-                chat_id=call.message.chat.id,
-                message_id=call.message.id,
                 reply_markup=adding_options_menu(poll_id),
             )
         elif operation == 'cancel':
-            delete(poll_id)
-            bot.edit_message_text(
-                text=main_menu_text,
-                chat_id=call.message.chat.id,
-                message_id=call.message.id,
-                parse_mode='html',
-                reply_markup=main_menu
-            )
+            if delete(poll_id):
+                bot.edit_message_text(
+                    text=main_menu_text,
+                    chat_id=call.message.chat.id,
+                    message_id=call.message.id,
+                    parse_mode='html',
+                    reply_markup=main_menu
+                )
 
 
 
