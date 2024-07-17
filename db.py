@@ -9,10 +9,11 @@ class Poll(Base):
     __tablename__ = 'Poll'
     id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
     name = Column(String, nullable=False, default='Без названия')
-    user_id = Column(Integer, nullable=False)
+    status = Column(String, default="Created")
     is_anonymous = Column(Boolean, nullable=False, default=False)
     is_public = Column(Boolean, nullable=False, default=True)
     can_retract_vote = Column(Boolean, nullable=False, default=False)
+    user_id = Column(Integer, nullable=False)
 
     options = relationship('Option', back_populates='poll', cascade='all, delete, delete-orphan')
     votes = relationship('Vote', back_populates='poll', cascade='all, delete, delete-orphan')
@@ -31,6 +32,7 @@ class Option(Base):
 class Vote(Base):
     __tablename__ = 'Vote'
     id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    user_id = Column(Integer, nullable=False)
     option_id = Column(Integer, ForeignKey('Option.id'), nullable=False)
     poll_id = Column(Integer, ForeignKey('Poll.id'), nullable=False)
 

@@ -1,4 +1,4 @@
-from db import session, Poll
+from db import session, Poll, Vote
 
 start_message_text = "Привет! Я бот для создания всевозможных голосований.\n" \
                      "Для вызова главного меню, воспользуйтесь командой /menu"
@@ -25,4 +25,19 @@ def change_name_text(poll_id):
     return (
         f'Введите новое название голосования\n'
         f'Прежнее название: <code>{poll.name}</code>'
+    )
+
+
+def poll_info_text(poll_id):
+    poll = session.query(Poll).get(poll_id)
+    votes = session.query(Vote).join(Poll).filter(Poll.id == poll_id).count()
+
+    return (
+        f'<b>Информация о голосовании</b>\n\n'
+        f'Название: {poll.name}\n'
+        f'Статус голосования: {"Открыто" if poll.status == "Opened" else "Закрыто"}\n'
+        f'Тип голосования: {"Скрытое (Анонимное)" if poll.is_anonymous else "Открытое (Не анонимное)"}\n'
+        f'Видимость результатов: {"Видно всегда" if poll.is_public else "После окончания голосования"}\n'
+        f'Отмена голоса: {"Доступна" if poll.can_retract_vote else "Не доступна"}\n\n'
+        f'Количество проголосовавших: {votes}'
     )

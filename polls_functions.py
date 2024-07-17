@@ -33,3 +33,13 @@ def change_retract_vote(poll_id):
     poll = session.query(Poll).get(poll_id)
     poll.can_retract_vote = not poll.can_retract_vote
     session.commit()
+
+
+def change_status(poll_id):
+    poll = session.query(Poll).get(poll_id)
+    poll.status = "Closed" if poll.status == "Opened" else "Opened"
+
+
+def delete(poll_id):
+    session.query(Poll).get(poll_id).delete()
+    session.commit()
