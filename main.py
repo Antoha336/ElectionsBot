@@ -2,13 +2,13 @@ import os
 import telebot
 from dotenv import load_dotenv
 
-from db import Poll, Option, Vote, session
+from db import Poll, Vote, session
 from polls_functions import change_name, change_anonymous, change_public, change_retract_vote, change_status, delete, \
     change_options
 from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text, poll_info_text, \
     change_options_text, voting_text
-from markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, adding_options_menu, \
-    voting_menu
+from markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, voting_menu
+
 
 load_dotenv()
 
@@ -61,6 +61,7 @@ def handle(call):
             reply_markup=create_poll_menu(poll.id)
         )
     elif operation == 'my_polls':
+        bot.clear_step_handler(call.message)
         bot.edit_message_text(
             text=my_polls_text,
             chat_id=call.message.chat.id,
@@ -71,6 +72,7 @@ def handle(call):
     else:
         poll_id = data[2]
         if operation == 'get':
+            bot.clear_step_handler(call.message)
             bot.edit_message_text(
                 text=poll_info_text(poll_id, call.from_user.id),
                 chat_id=call.message.chat.id,
@@ -84,7 +86,7 @@ def handle(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.id,
                 parse_mode='html',
-                reply_markup=back_menu
+                reply_markup=back_menu(poll_id)
             )
             bot.register_next_step_handler(call.message, change_name, bot, call.message, poll_id)
         elif operation == 'change_anonymous':
@@ -123,14 +125,6 @@ def handle(call):
                     parse_mode='html',
                     reply_markup=poll_info_menu(poll_id, call.from_user.id),
                 )
-        elif operation == 'options_settings':
-            bot.edit_message_text(
-                text=create_poll_text(poll_id),
-                chat_id=call.message.chat.id,
-                message_id=call.message.id,
-                parse_mode='html',
-                reply_markup=adding_options_menu(poll_id),
-            )
         elif operation == 'cancel':
             if delete(poll_id):
                 bot.edit_message_text(
@@ -146,7 +140,7 @@ def handle(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.id,
                 parse_mode='html',
-                reply_markup=back_menu
+                reply_markup=back_menu(poll_id)
             )
             bot.register_next_step_handler(call.message, change_options, bot, call.message, poll_id)
 
