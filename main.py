@@ -34,14 +34,24 @@ def send_welcome(message):
                      reply_markup=main_menu)
 
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith('main_menu'))
+@bot.callback_query_handler(func=lambda call: call.data.startswith('menu'))
 def handle(call):
+    menu = call.data.split()[1]
     bot.clear_step_handler(call.message)
-    bot.edit_message_text(text=main_menu_text,
-                          chat_id=call.message.chat.id,
-                          message_id=call.message.id,
-                          parse_mode='html',
-                          reply_markup=main_menu)
+    if menu == 'main':
+        bot.edit_message_text(text=main_menu_text,
+                              chat_id=call.message.chat.id,
+                              message_id=call.message.id,
+                              parse_mode='html',
+                              reply_markup=main_menu)
+    elif menu == 'my_polls':
+        bot.edit_message_text(
+            text=my_polls_text,
+            chat_id=call.message.chat.id,
+            message_id=call.message.id,
+            parse_mode='html',
+            reply_markup=my_polls_menu(call.from_user.id)
+        )
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('poll'))
@@ -59,15 +69,6 @@ def handle(call):
             message_id=call.message.id,
             parse_mode='html',
             reply_markup=create_poll_menu(poll.id)
-        )
-    elif operation == 'my_polls':
-        bot.clear_step_handler(call.message)
-        bot.edit_message_text(
-            text=my_polls_text,
-            chat_id=call.message.chat.id,
-            message_id=call.message.id,
-            parse_mode='html',
-            reply_markup=my_polls_menu(call.from_user.id)
         )
     else:
         poll_id = data[2]
@@ -128,11 +129,11 @@ def handle(call):
         elif operation == 'cancel':
             if delete(poll_id):
                 bot.edit_message_text(
-                    text=main_menu_text,
+                    text=my_polls_text,
                     chat_id=call.message.chat.id,
                     message_id=call.message.id,
                     parse_mode='html',
-                    reply_markup=main_menu
+                    reply_markup=my_polls_menu(call.from_user.id)
                 )
         elif operation == 'change_options':
             bot.edit_message_text(

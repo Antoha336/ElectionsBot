@@ -6,12 +6,12 @@ def back(menu_name):
     if menu_name == 'main':
         item = InlineButton(
             text='Назад',
-            callback_data='main_menu'
+            callback_data='menu main'
         )
     elif menu_name == 'my_polls':
         item = InlineButton(
             text='Назад',
-            callback_data='my_polls'
+            callback_data='menu my_polls'
         )
     else:
         item = InlineButton(
@@ -29,7 +29,7 @@ main_menu = InlineMarkup()
 item_1 = InlineButton(text='Создать голосование',
                       callback_data='poll create_poll')
 item_2 = InlineButton(text='Мои голосования',
-                      callback_data='poll my_polls')
+                      callback_data='menu my_polls')
 main_menu.row(item_1).row(item_2)
 
 
@@ -62,7 +62,7 @@ def create_poll_menu(poll_id):
         text='Подтвердить создание',
         callback_data=f'poll change_status {poll_id}'
     )
-    return InlineMarkup().row(item_1, item_2).row(item_3).row(item_4).row(item_5).row(item_6, item_7).row(back('main'))
+    return InlineMarkup().row(item_1, item_2).row(item_3).row(item_4).row(item_5).row(item_6, item_7).row(back('my_polls'))
 
 
 def my_polls_menu(user_id):
@@ -99,7 +99,7 @@ def poll_info_menu(poll_id, user_id):
             callback_data=f'poll change_status {poll_id}'
         )
         menu.row(item_2)
-    menu.row(back('main'))
+    menu.row(back('my_polls'))
 
     return menu
 
