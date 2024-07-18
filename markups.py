@@ -1,5 +1,5 @@
 from telebot.types import InlineKeyboardMarkup as InlineMarkup, InlineKeyboardButton as InlineButton
-from db import session, Poll, Vote, Option
+from db import session, Poll, Option
 
 
 def back(menu_name):

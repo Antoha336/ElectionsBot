@@ -22,16 +22,20 @@ bot = telebot.TeleBot(get_env_value('BOT_TOKEN'))
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.send_message(chat_id=message.chat.id,
-                     text=start_message_text)
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=start_message_text
+    )
 
 
 @bot.message_handler(commands=['menu'])
 def send_welcome(message):
-    bot.send_message(chat_id=message.chat.id,
-                     text=main_menu_text,
-                     parse_mode='html',
-                     reply_markup=main_menu)
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=main_menu_text,
+        parse_mode='html',
+        reply_markup=main_menu
+    )
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('menu'))
@@ -39,11 +43,13 @@ def handle(call):
     menu = call.data.split()[1]
     bot.clear_step_handler(call.message)
     if menu == 'main':
-        bot.edit_message_text(text=main_menu_text,
-                              chat_id=call.message.chat.id,
-                              message_id=call.message.id,
-                              parse_mode='html',
-                              reply_markup=main_menu)
+        bot.edit_message_text(
+            text=main_menu_text,
+            chat_id=call.message.chat.id,
+            message_id=call.message.id,
+            parse_mode='html',
+            reply_markup=main_menu
+        )
     elif menu == 'my_polls':
         bot.edit_message_text(
             text=my_polls_text,
@@ -79,7 +85,7 @@ def handle(call):
                 chat_id=call.message.chat.id,
                 message_id=call.message.id,
                 parse_mode='html',
-                reply_markup=poll_info_menu(poll_id, call.from_user.id),
+                reply_markup=poll_info_menu(poll_id, call.from_user.id)
             )
         elif operation == 'change_name':
             bot.edit_message_text(
