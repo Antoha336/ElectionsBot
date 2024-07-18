@@ -2,7 +2,7 @@ import os
 import telebot
 from dotenv import load_dotenv
 
-from database import Poll, Vote, session
+from database.database import Poll, Vote, session
 from logic.polls_functions import change_name, change_anonymous, change_public, change_retract_vote, change_status, \
     delete, \
     change_options

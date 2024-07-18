@@ -1,4 +1,4 @@
-from database import session, Poll, Option
+from database.database import session, Poll, Option
 from ui.texts import create_poll_text
 from ui.markups import create_poll_menu
 

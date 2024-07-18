@@ -1,3 +1,5 @@
+import os.path
+
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -42,7 +44,7 @@ class Vote(Base):
     poll = relationship('Poll', back_populates='votes')
 
 
-engine = create_engine('sqlite:///polls.db')
+engine = create_engine(f'sqlite:///src/database/polls.db')
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
