@@ -169,7 +169,7 @@ def handle(call):
     operation, poll_id = data[0], data[1]
 
     poll = session.get(Poll, poll_id)
-    user_vote = session.query(Vote).join(Poll).filter(Poll.id == poll_id and Vote.user_id == call.from_user.id).first()
+    user_vote = session.query(Vote).join(Poll).filter(Poll.id == poll_id).filter(Vote.user_id == call.from_user.id).first()
     if user_vote and not poll.can_retract_vote:
         bot.answer_callback_query(
             callback_query_id=call.id,
