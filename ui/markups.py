@@ -97,12 +97,19 @@ def poll_info_menu(poll_id, user_id):
         )
         menu.row(item_1).row(item_2)
 
-    if poll.user_id == user_id and poll.status == 'Opened':
+    if not poll.is_anonymous:
         item_3 = InlineButton(
+            text='Подробные результаты',
+            callback_data=f'poll results {poll_id}'
+        )
+        menu.row(item_3)
+
+    if poll.user_id == user_id and poll.status == 'Opened':
+        item_4 = InlineButton(
             text='Закончить голосование',
             callback_data=f'poll change_status {poll_id}'
         )
-        menu.row(item_3)
+        menu.row(item_4)
     menu.row(back('my_polls'))
 
     return menu
