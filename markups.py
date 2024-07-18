@@ -91,14 +91,18 @@ def poll_info_menu(poll_id, user_id):
             text='Проголосовать',
             callback_data=f'vote {poll_id}'
         )
-        menu.row(item_1)
+        item_2 = InlineButton(
+            text='Ссылка для голосования',
+            url=f'tg://msg_url?url=https://t.me/cw_elections_bot?start={poll_id}'
+        )
+        menu.row(item_1).row(item_2)
 
     if poll.user_id == user_id and poll.status == 'Opened':
-        item_2 = InlineButton(
+        item_3 = InlineButton(
             text='Закончить голосование',
             callback_data=f'poll change_status {poll_id}'
         )
-        menu.row(item_2)
+        menu.row(item_3)
     menu.row(back('my_polls'))
 
     return menu
