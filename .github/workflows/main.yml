@@ -1,0 +1,23 @@
+name: "Build and deploy CI"
+
+on:
+  push:
+    branches: [ "ci/build_and_deploy" ]
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run command on remote server
+        uses: D3rHase/ssh-command-action@v0.2.2
+        with:
+          host: ${{secrets.SSH_HOST}}
+          user: ${{secrets.SSH_USER}}
+          private_key: ${{secrets.SSH_PRIVATE_KEY}}
+          command: |
+            cd ${{secrets.SERVER_PROJECT_FOLDER}};
+            git checkout main;
+            git pull;
+            docker compose up -d --build;
