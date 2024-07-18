@@ -10,6 +10,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          command: cd ${{secrets.SERVER_PROJECT_FOLDER}}
+
       - name: Run command on remote server
         uses: D3rHase/ssh-command-action@v0.2.2
         with:
