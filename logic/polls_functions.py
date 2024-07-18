@@ -1,6 +1,6 @@
-from db import session, Poll, Option
-from texts import create_poll_text
-from markups import create_poll_menu
+from database import session, Poll, Option
+from ui.texts import create_poll_text
+from ui.markups import create_poll_menu
 
 
 def change_name(message, bot, call_message, poll_id):

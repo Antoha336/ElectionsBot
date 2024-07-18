@@ -1,5 +1,5 @@
 from sqlalchemy import func
-from db import session, Poll, Vote, Option
+from database import session, Poll, Vote, Option
 
 start_message_text = (
     "Привет! Я бот для создания всевозможных голосований.\n" 

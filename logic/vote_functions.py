@@ -1,4 +1,4 @@
-from db import session, Vote
+from database import session, Vote
 
 
 def vote(user_id, option_id, poll_id, user_vote):

@@ -2,13 +2,13 @@ import os
 import telebot
 from dotenv import load_dotenv
 
-from db import Poll, Vote, session
-from polls_functions import change_name, change_anonymous, change_public, change_retract_vote, change_status, delete, \
+from database import Poll, Vote, session
+from logic.polls_functions import change_name, change_anonymous, change_public, change_retract_vote, change_status, delete, \
     change_options
-from texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text, poll_info_text, \
+from ui.texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text, poll_info_text, \
     change_options_text, voting_text
-from markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, voting_menu
-from vote_functions import vote
+from ui.markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, voting_menu
+from logic.vote_functions import vote
 
 load_dotenv()
 
