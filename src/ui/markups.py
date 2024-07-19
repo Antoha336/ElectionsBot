@@ -1,5 +1,5 @@
 from telebot.types import InlineKeyboardMarkup as InlineMarkup, InlineKeyboardButton as InlineButton
-from database.database import session, Poll, Option
+from database.database import session, Poll, Option, Vote
 
 
 def back(menu_name):
@@ -31,7 +31,7 @@ item_1 = InlineButton(
     callback_data='poll create_poll'
 )
 item_2 = InlineButton(
-    text='Мои голосования',
+    text='Ваши голосования',
     callback_data='menu my_polls'
 )
 main_menu.row(item_1).row(item_2)
@@ -66,19 +66,46 @@ def create_poll_menu(poll_id):
         text='Подтвердить создание',
         callback_data=f'poll change_status {poll_id}'
     )
-    return InlineMarkup().row(item_1, item_2).row(item_3).row(item_4).row(item_5).row(item_6, item_7).row(back('my_polls'))
+    return InlineMarkup().row(item_1, item_2).row(item_3).row(item_4).row(item_5).row(item_6, item_7).row(
+        back('my_polls'))
 
 
-def my_polls_menu(user_id):
-    polls = session.query(Poll).filter(Poll.user_id == user_id)
+item_1 = InlineButton(
+    text='Голосования, созданные вами',
+    callback_data='menu user_polls'
+)
+item_2 = InlineButton(
+    text='Голосования, с вашим участием',
+    callback_data='menu voted_polls'
+)
+my_polls_menu = InlineMarkup().row(item_1).row(item_2).row(back('main'))
+
+
+def user_polls_menu(user_id):
     menu = InlineMarkup()
-    for poll in polls:
+    polls = session.query(Poll.id, Poll.name).filter(Poll.user_id == user_id)
+    for poll_id, poll_name in polls:
         item = InlineButton(
-            text=poll.name,
-            callback_data=f'poll get {poll.id}'
+            text=poll_name,
+            callback_data=f'poll get {poll_id}'
         )
         menu.row(item)
-    menu.row(back('main'))
+    menu.add(back('my_polls'))
+
+    return menu
+
+
+def voted_polls_menu(user_id):
+    menu = InlineMarkup()
+    polls = session.query(Poll.id, Poll.name).join(Vote).filter(Vote.user_id == user_id).distinct()
+    for poll_id, poll_name in polls:
+        item = InlineButton(
+            text=poll_name,
+            callback_data=f'poll get {poll_id}'
+        )
+        menu.row(item)
+    menu.add(back('my_polls'))
+
     return menu
 
 
@@ -116,7 +143,7 @@ def poll_info_menu(poll_id, user_id):
             callback_data=f'poll change_status {poll_id}'
         )
         menu.row(item_4)
-    menu.row(back('my_polls'))
+    menu.row(back('main'))
 
     return menu
 
