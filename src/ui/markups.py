@@ -26,10 +26,14 @@ def back_menu(menu_name):
 
 
 main_menu = InlineMarkup()
-item_1 = InlineButton(text='Создать голосование',
-                      callback_data='poll create_poll')
-item_2 = InlineButton(text='Мои голосования',
-                      callback_data='menu my_polls')
+item_1 = InlineButton(
+    text='Создать голосование',
+    callback_data='poll create_poll'
+)
+item_2 = InlineButton(
+    text='Мои голосования',
+    callback_data='menu my_polls'
+)
 main_menu.row(item_1).row(item_2)
 
 
@@ -69,8 +73,10 @@ def my_polls_menu(user_id):
     polls = session.query(Poll).filter(Poll.user_id == user_id)
     menu = InlineMarkup()
     for poll in polls:
-        item = InlineButton(text=poll.name,
-                            callback_data=f'poll get {poll.id}')
+        item = InlineButton(
+            text=poll.name,
+            callback_data=f'poll get {poll.id}'
+        )
         menu.row(item)
     menu.row(back('main'))
     return menu
