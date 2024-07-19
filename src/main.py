@@ -7,7 +7,8 @@ from logic.polls_functions import change_name, change_anonymous, change_public, 
     delete, change_options
 from ui.texts import start_message_text, main_menu_text, create_poll_text, my_polls_text, change_name_text, \
     poll_info_text, change_options_text, voting_text, results_text
-from ui.markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, voting_menu
+from ui.markups import main_menu, create_poll_menu, my_polls_menu, back_menu, poll_info_menu, voting_menu, \
+    user_polls_menu, voted_polls_menu
 from logic.vote_functions import vote
 
 load_dotenv()
@@ -60,15 +61,20 @@ def handle(call):
             parse_mode='html',
             reply_markup=main_menu
         )
-    elif menu == 'my_polls':
+    else:
+        markup = my_polls_menu
+        if menu == 'user_polls':
+            markup = user_polls_menu(call.from_user.id)
+        elif menu == 'voted_polls':
+            markup = voted_polls_menu(call.from_user.id)
+
         bot.edit_message_text(
             text=my_polls_text,
             chat_id=call.message.chat.id,
             message_id=call.message.id,
             parse_mode='html',
-            reply_markup=my_polls_menu(call.from_user.id)
+            reply_markup=markup,
         )
-
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('poll'))
 def handle(call):
@@ -160,7 +166,7 @@ def handle(call):
                     chat_id=call.message.chat.id,
                     message_id=call.message.id,
                     parse_mode='html',
-                    reply_markup=my_polls_menu(call.from_user.id)
+                    reply_markup=my_polls_menu
                 )
         elif operation == 'change_options':
             bot.edit_message_text(

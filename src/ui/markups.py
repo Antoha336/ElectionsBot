@@ -122,7 +122,7 @@ def poll_info_menu(poll_id, user_id):
 
 
 def voting_menu(poll_id):
-    options = session.query(Option).join(Poll).filter(Poll.id == poll_id)
+    options = session.query(Option).join(Poll).filter(Poll.id == poll_id).order_by(Option.name)
 
     menu = InlineMarkup()
     for option in options:
