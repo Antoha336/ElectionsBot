@@ -23,14 +23,16 @@ bot = telebot.TeleBot(get_env_value('BOT_TOKEN'))
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    text = start_message_text
+    markup = None
     if ' ' in message.text:
         try:
-            poll_id = int(message.text.split()[1])
-            text = poll_info_text(poll_id, message.from_user.id)
-            markup = poll_info_menu(poll_id, message.from_user.id)
+            poll_slug = message.text.split()[1]
+            text = poll_info_text(poll_slug, message.from_user.id)
+            markup = poll_info_menu(poll_slug, message.from_user.id)
         except Exception:
-            text = start_message_text
-            markup = None
+            pass
+
     bot.send_message(
         chat_id=message.chat.id,
         text=text,
@@ -75,6 +77,7 @@ def handle(call):
             parse_mode='html',
             reply_markup=markup,
         )
+
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('poll'))
 def handle(call):
@@ -218,7 +221,8 @@ def handle(call):
             )
     else:
         user = call.from_user
-        vote('@' + user.username if user.username is not None else user.first_name, user.id, data[2], poll_id, user_vote)
+        vote('@' + user.username if user.username is not None else user.first_name, user.id, data[2], poll_id,
+             user_vote)
         bot.answer_callback_query(
             callback_query_id=call.id,
             text='Спасибо! Ваш голос учтён!'

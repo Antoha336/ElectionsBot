@@ -110,37 +110,40 @@ def voted_polls_menu(user_id):
 
 
 def poll_info_menu(poll_id, user_id):
-    poll = session.query(Poll).get(poll_id)
+    poll = session.get(Poll, poll_id)
+    if poll is None:
+        poll = session.query(Poll).filter(Poll.slug == poll_id).first()
+
     menu = InlineMarkup()
 
     if poll.status == 'Created':
         if poll.user_id == user_id:
-            return create_poll_menu(poll_id)
+            return create_poll_menu(poll.id)
         else:
             return back_menu('main')
 
     if poll.status == 'Opened':
         item_1 = InlineButton(
             text='Проголосовать',
-            callback_data=f'vote {poll_id}'
+            callback_data=f'vote {poll.id}'
         )
         item_2 = InlineButton(
             text='Ссылка для голосования',
-            url=f'tg://msg_url?url=https://t.me/cw_elections_bot?start={poll_id}'
+            url=f'tg://msg_url?url=https://t.me/cw_elections_bot?start={poll.slug}'
         )
         menu.row(item_1).row(item_2)
 
     if not poll.is_anonymous:
         item_3 = InlineButton(
             text='Подробные результаты',
-            callback_data=f'poll results {poll_id}'
+            callback_data=f'poll results {poll.id}'
         )
         menu.row(item_3)
 
     if poll.user_id == user_id and poll.status == 'Opened':
         item_4 = InlineButton(
             text='Закончить голосование',
-            callback_data=f'poll change_status {poll_id}'
+            callback_data=f'poll change_status {poll.id}'
         )
         menu.row(item_4)
     menu.row(back('main'))

@@ -42,13 +42,16 @@ def change_name_text(poll_id):
 
 def poll_info_text(poll_id, user_id):
     poll = session.get(Poll, poll_id)
+    if poll is None:
+        poll = session.query(Poll).filter(Poll.slug == poll_id).first()
+
     votes = session.query(
         Option.name,
         (func.count(Vote.id)).label('vote_count')
     ).join(
         Vote, Vote.option_id == Option.id, isouter=True
     ).filter(
-        Option.poll_id == poll_id
+        Option.poll_id == poll.id
     ).group_by(
         Option.id
     ).order_by(
@@ -57,7 +60,7 @@ def poll_info_text(poll_id, user_id):
 
     if poll.status == 'Created':
         if poll.user_id == user_id:
-            return create_poll_text(poll_id)
+            return create_poll_text(poll.id)
         else:
             return 'Нет доступа к голосованию, т.к. голосование ещё не было открыто'
 

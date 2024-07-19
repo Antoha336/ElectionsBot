@@ -1,4 +1,4 @@
-import os.path
+import uuid
 
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,6 +10,7 @@ Base = declarative_base()
 class Poll(Base):
     __tablename__ = 'Poll'
     id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    slug = Column(String, default=uuid.uuid4().__str__())
     name = Column(String, nullable=False, default='Без названия')
     status = Column(String, default="Created")
     is_anonymous = Column(Boolean, nullable=False, default=False)
