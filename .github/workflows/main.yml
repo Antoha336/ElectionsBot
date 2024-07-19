@@ -1,0 +1,32 @@
+name: "Build and deploy CI"
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Auth in Docker
+        run: echo ${{secrets.DOCKER_PASSWORD}} | docker login --username ${{secrets.DOCKER_USERNAME}} --password-stdin
+
+      - name: Build and push docker image
+        run:  |
+          docker compose build
+          docker tag electionsbot-bot an1ea/elections-bot
+          docker push an1ea/elections-bot
+
+      - name: Pull and deploy docker image on remote server
+        uses: D3rHase/ssh-command-action@v0.2.2
+        with:
+          host: ${{secrets.SSH_HOST}}
+          user: ${{secrets.SSH_USER}}
+          private_key: ${{secrets.SSH_PRIVATE_KEY}}
+          command: |
+            cd ${{secrets.SERVER_PROJECT_FOLDER}};
+            docker pull an1ea/elections-bot;
+            docker compose up -d --build;
