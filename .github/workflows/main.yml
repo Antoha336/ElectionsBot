@@ -9,11 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          command: cd ${{secrets.SERVER_PROJECT_FOLDER}}
+        uses: actions/checkout@v4
 
-      - name: Run command on remote server
+      - name: Auth in Docker
+        run: echo ${{secrets.DOCKER_PASSWORD}} | docker login --username ${{secrets.DOCKER_USERNAME}} --password-stdin
+
+      - name: Build and push docker image
+        run:  |
+          docker compose build
+          docker tag electionsbot-bot an1ea/elections-bot
+          docker push an1ea/elections-bot
+
+      - name: Pull and deploy docker image on remote server
         uses: D3rHase/ssh-command-action@v0.2.2
         with:
           host: ${{secrets.SSH_HOST}}
@@ -21,6 +28,5 @@ jobs:
           private_key: ${{secrets.SSH_PRIVATE_KEY}}
           command: |
             cd ${{secrets.SERVER_PROJECT_FOLDER}};
-            git checkout main;
-            git pull;
+            docker pull;
             docker compose up -d --build;
