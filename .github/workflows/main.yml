@@ -28,5 +28,5 @@ jobs:
           private_key: ${{secrets.SSH_PRIVATE_KEY}}
           command: |
             cd ${{secrets.SERVER_PROJECT_FOLDER}};
-            docker pull;
+            docker pull an1ea/elections-bot;
             docker compose up -d --build;
